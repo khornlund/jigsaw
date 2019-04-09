@@ -1,7 +1,7 @@
 from torchvision import datasets, transforms
 
 from jigsaw.base import BaseDataLoader
-from jigsaw.data_loader import JigsawDataset, GloveDataset, FastTextDataset
+from jigsaw.data_loader.data_sources import JigsawDataset, GloveDataset, FastTextDataset
 
 
 class MnistDataLoader(BaseDataLoader):
@@ -15,7 +15,8 @@ class MnistDataLoader(BaseDataLoader):
         ])
         self.data_dir = data_dir
         self.dataset = datasets.MNIST(self.data_dir, train=training, download=True, transform=trsfm)
-        super(MnistDataLoader, self).__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
+        super(MnistDataLoader, self).__init__(
+            self.dataset, batch_size, shuffle, validation_split, num_workers)
 
 
 class JigsawDataLoader(BaseDataLoader):
@@ -25,6 +26,24 @@ class JigsawDataLoader(BaseDataLoader):
 
         # check datasets exist
         JigsawDataSources.get(data_dir)
+
+
+class TextDataLoader:
+
+    def get(self, data_dir, filename):
+        pass
+
+    def _preprocess(self, data):
+        """Credit goes to https://www.kaggle.com/gpreda/jigsaw-fast-compact-solution"""
+        punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~`" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&'
+
+        def clean_special_chars(text, punct):
+            for p in punct:
+                text = text.replace(p, ' ')
+            return text
+
+        data = data.astype(str).apply(lambda x: clean_special_chars(x, punct))
+        return data
 
 
 class JigsawDataSources:
