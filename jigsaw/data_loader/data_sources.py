@@ -5,7 +5,7 @@ import glob
 
 import kaggle
 
-from jigsaw.data_loader.const import TRAIN_CSV, TEST_CSV
+from jigsaw.data_loader.const import TRAIN_CSV, TEST_CSV, FAST_VEC, GLOVE_TXT
 
 
 class KaggleDataset(abc.ABC):
@@ -18,6 +18,7 @@ class KaggleDataset(abc.ABC):
 
     def load(self):
         if self.missing_files():
+            kaggle.api.authenticate()
             self.get_data()
         missing_files = self.missing_files()
         if missing_files:
@@ -50,7 +51,7 @@ class KaggleDataset(abc.ABC):
 
                     # copy file (taken from zipfile's extract)
                     source = fh.open(member)
-                    target = file(os.path.join(path, filename), "wb")
+                    target = open(os.path.join(path, filename), "wb")
                     with source, target:
                         shutil.copyfileobj(source, target)
 
@@ -66,7 +67,6 @@ class JigsawDataset(KaggleDataset):
 
     def get_data(self):
         dest = os.path.join(self._data_dir, self.COMPETITION)
-        kaggle.api.authenticate()
         kaggle.api.competition_download_files(self.COMPETITION, path=dest, quiet=False)
         self.unzip_all(dest)
 
@@ -78,8 +78,9 @@ class GloveDataset(KaggleDataset):
 
     DATASET = 'takuok/glove840b300dtxt'
 
+    EXPECTED = [GLOVE_TXT]
+
     def get_data(self):
-        kaggle.api.authenticate()
         kaggle.api.dataset_download_files(
             self.DATASET, path=self._data_dir, unzip=True, quiet=False)
 
@@ -90,8 +91,9 @@ class FastTextDataset(KaggleDataset):
 
     DATASET = 'yekenot/fasttext-crawl-300d-2m'
 
+    EXPECTED = [FAST_VEC]
+
     def get_data(self):
-        kaggle.api.authenticate()
         kaggle.api.dataset_download_files(
             self.DATASET, path=self._data_dir, unzip=True, quiet=False)
 

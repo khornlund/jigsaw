@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 from torchvision.utils import make_grid
-from jigsaw.base import BaseTrainer
+from jigsaw.base.base_trainer import BaseTrainer
 
 
 class Trainer(BaseTrainer):

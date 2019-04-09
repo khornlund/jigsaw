@@ -3,7 +3,9 @@ import math
 import json
 import logging
 import datetime
+
 import torch
+
 from jigsaw.utils.util import ensure_dir
 from jigsaw.utils.visualization import WriterTensorboardX
 

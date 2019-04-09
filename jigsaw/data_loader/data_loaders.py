@@ -2,7 +2,7 @@ import multiprocessing
 
 from torchvision import datasets, transforms
 
-from jigsaw.base import BaseDataLoader
+from jigsaw.base.base_loader import BaseDataLoader
 from jigsaw.data_loader.data_sources import JigsawDataset, GloveDataset, FastTextDataset
 
 
@@ -30,7 +30,7 @@ class JigsawDataLoader(BaseDataLoader):
         JigsawDataSources.get(data_dir)
 
 
-class TextDataLoader:
+class TextDataLoader: 
 
     def get(self, data_dir, filename):
         pass

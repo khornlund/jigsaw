@@ -1,18 +1,29 @@
 import os
-from tqdm import tqdm
+import random
 
+from tqdm import tqdm
 import torch
+import numpy as np
 
 import jigsaw.data_loader.data_loaders as module_data
 import jigsaw.model.loss as module_loss
 import jigsaw.model.metric as module_metric
 import jigsaw.model.model as module_arch
-from jigsaw.trainer import Trainer
-from jigsaw.utils import Logger
+from jigsaw.trainer.trainer import Trainer
+from jigsaw.utils.logger import Logger
 
 
 def get_instance(module, name, config, *args):
     return getattr(module, config[name]['type'])(*args, **config[name]['args'])
+
+
+def seed_everything(seed=1234):
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
 
 
 def train(config, resume):
