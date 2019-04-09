@@ -12,27 +12,47 @@ class KaggleDataset(abc.ABC):
 
     EXPECTED = []
 
-    @classmethod
+    def __init__(self, data_dir):
+        super().__init__()
+        self._data_dir = data_dir
+
+    def load(self):
+        if self.missing_files():
+            self.get_data()
+        missing_files = self.missing_files()
+        if missing_files:
+            raise Exception(f'Could not populate {missing_files}!')
+        return self.read_data()
+
     @abc.abstractmethod
-    def get(cls, data_dir):
+    def get_data(self):
         pass
 
-    @classmethod
-    def validate(cls, data_dir):
-        for e in cls.EXPECTED:
-            f = os.path.join(data_dir, e)
-            if not os.path.exists(f):
-                print(f'ERROR: "{f}" not found!')
+    @abc.abstractmethod
+    def read_data(self):
+        pass
 
-    @classmethod
-    def unzip_all(cls, path):
-        for f in glob.glob(os.path.join(path, '*.zip')):
-            target = f.replace('.zip', '')
-            if os.path.exists(target):
-                continue
-            with zipfile.ZipFile(f, 'r') as zh:
-                print(f'unzipping: {f}')
-                zh.extractall(target)
+    def missing_files(self):
+        for e in self.EXPECTED:
+            f = os.path.join(self._data_dir, e)
+            if not os.path.exists(f):
+                yield f
+
+    def unzip_all(self, path):
+        for zip_f in glob.glob(os.path.join(path, '*.zip')):
+            print(f'unzipping: {zip_f}')
+            with zipfile.ZipFile(zip_f) as fh:
+                for member in fh.namelist():
+                    filename = os.path.basename(member)
+                    # skip directories
+                    if not filename:
+                        continue
+
+                    # copy file (taken from zipfile's extract)
+                    source = fh.open(member)
+                    target = file(os.path.join(path, filename), "wb")
+                    with source, target:
+                        shutil.copyfileobj(source, target)
 
 
 class JigsawDataset(KaggleDataset):
@@ -44,30 +64,37 @@ class JigsawDataset(KaggleDataset):
         TEST_CSV
     ]
 
-    @classmethod
-    def get(cls, data_dir):
-        dest = os.path.join(data_dir, cls.COMPETITION)
+    def get_data(self):
+        dest = os.path.join(self._data_dir, self.COMPETITION)
         kaggle.api.authenticate()
-        kaggle.api.competition_download_files(cls.COMPETITION, path=dest, quiet=False)
-        cls.unzip_all(dest)
-        cls.validate(data_dir)
+        kaggle.api.competition_download_files(self.COMPETITION, path=dest, quiet=False)
+        self.unzip_all(dest)
+
+    def read_data(self):
+        return 0
 
 
 class GloveDataset(KaggleDataset):
 
     DATASET = 'takuok/glove840b300dtxt'
 
-    @classmethod
-    def get(cls, data_dir):
+    def get_data(self):
         kaggle.api.authenticate()
-        kaggle.api.dataset_download_files(cls.DATASET, path=data_dir, unzip=True, quiet=False)
+        kaggle.api.dataset_download_files(
+            self.DATASET, path=self._data_dir, unzip=True, quiet=False)
 
+    def read_data(self):
+        return 0
 
 class FastTextDataset(KaggleDataset):
 
     DATASET = 'yekenot/fasttext-crawl-300d-2m'
 
-    @classmethod
-    def get(cls, data_dir):
+    def get_data(self):
         kaggle.api.authenticate()
-        kaggle.api.dataset_download_files(cls.DATASET, path=data_dir, unzip=True, quiet=False)
+        kaggle.api.dataset_download_files(
+            self.DATASET, path=self._data_dir, unzip=True, quiet=False)
+
+    def read_data(self):
+        return 0
+    

@@ -21,7 +21,8 @@ requirements = [
     'jupyter',
     'tensorboard',
     'tensorboardX',
-    'kaggle'
+    'kaggle',
+    'pyyaml'
 ]
 
 setup(

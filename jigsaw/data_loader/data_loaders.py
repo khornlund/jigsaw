@@ -1,3 +1,5 @@
+import multiprocessing
+
 from torchvision import datasets, transforms
 
 from jigsaw.base import BaseDataLoader
@@ -48,8 +50,10 @@ class TextDataLoader:
 
 class JigsawDataSources:
 
-    @classmethod
-    def get(cls, path):
-        JigsawDataset.get(path)
-        GloveDataset.get(path)
-        FastTextDataset.get(path)
+    def __init__(self, path):
+        datasets = [JigsawDataset(path), GloveDataset(path), FastTextDataset(path)]
+        pool = multiprocessing.Pool(processes = len(datasets))
+        pool.map(self.get_data, datasets)
+
+    def get_data(self, dataset):
+        return dataset.load()
