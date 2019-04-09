@@ -20,7 +20,8 @@ requirements = [
     'pytest',
     'jupyter',
     'tensorboard',
-    'tensorboardX'
+    'tensorboardX',
+    'kaggle'
 ]
 
 setup(

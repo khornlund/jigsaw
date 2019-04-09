@@ -6,3 +6,9 @@ def test_pytorch():
     x += 1
     print(x)
     pass
+
+
+def test_cuda():
+    x = torch.zeros(3,4)
+    x = x.cuda()
+    pass

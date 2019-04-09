@@ -7,7 +7,7 @@ import jigsaw.data_loader.data_loaders as module_data
 import jigsaw.model.loss as module_loss
 import jigsaw.model.metric as module_metric
 import jigsaw.model.model as module_arch
-from jigsaw.trainer import Trainere
+from jigsaw.trainer import Trainer
 from jigsaw.utils import Logger
 
 
