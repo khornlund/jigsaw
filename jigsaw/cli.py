@@ -1,6 +1,6 @@
 import click
 import os
-import json
+import yaml
 
 from jigsaw import main
 
@@ -20,7 +20,7 @@ def train(config_filename, resume, device):
     if config_filename:
         # load config file
         with open(config_filename) as fh:
-            config = json.load(fh)
+            config = yaml.safe_load(fh)
         # setting path to save trained models and log files
         # path = os.path.join(config['trainer']['save_dir'], config['name'])
 
