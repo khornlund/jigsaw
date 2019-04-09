@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
-from jigsaw.base import BaseModel
+from jigsaw.base.base_model import BaseModel
 
 
 class MnistModel(BaseModel):
@@ -24,15 +24,15 @@ class MnistModel(BaseModel):
 
 class SpatialDropout(nn.Dropout2d):
     def forward(self, x):
-        x = x.unsqueeze(2)    # (N, T, 1, K)
-        x = x.permute(0, 3, 2, 1)  # (N, K, 1, T)
+        x = x.unsqueeze(2)                          # (N, T, 1, K)
+        x = x.permute(0, 3, 2, 1)                   # (N, K, 1, T)
         x = super(SpatialDropout, self).forward(x)  # (N, K, 1, T), some features are masked
-        x = x.permute(0, 3, 2, 1)  # (N, T, 1, K)
-        x = x.squeeze(2)  # (N, T, K)
+        x = x.permute(0, 3, 2, 1)                   # (N, T, 1, K)
+        x = x.squeeze(2)                            # (N, T, K)
         return x
 
 
-class NeuralNet(nn.Module):
+class NeuralNet(BaseModel):
     def __init__(self, embedding_matrix, num_aux_targets):
         super(NeuralNet, self).__init__()
         embed_size = embedding_matrix.shape[1]
