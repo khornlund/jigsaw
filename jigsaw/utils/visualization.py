@@ -2,6 +2,7 @@ import importlib
 
 
 class WriterTensorboardX():
+    
     def __init__(self, writer_dir, logger, enable):
         self.writer = None
         if enable:
@@ -9,10 +10,11 @@ class WriterTensorboardX():
             try:
                 self.writer = importlib.import_module('tensorboardX').SummaryWriter(log_path)
             except ImportError:
-                message = "Warning: TensorboardX visualization is configured to use, but currently not installed on " \
-                    "this machine. Please install the package by 'pip install tensorboardx' command or turn " \
-                    "off the option in the 'config.json' file."
-                logger.warning(message)
+                logger.warning("""
+                    Warning: TensorboardX visualization is configured to use, but  
+                    currently not installed on this machine. Please install the 
+                    package by  'pip install tensorboardx' command or turn off 
+                    the option in  the 'config.json' file.""")
         self.step = 0
         self.mode = ''
 
@@ -21,7 +23,6 @@ class WriterTensorboardX():
             'add_text', 'add_histogram', 'add_pr_curve', 'add_embedding'
         ]
         self.tag_mode_exceptions = ['add_histogram', 'add_embedding']
-
 
     def set_step(self, step, mode='train'):
         self.mode = mode
@@ -49,5 +50,5 @@ class WriterTensorboardX():
             try:
                 attr = object.__getattr__(name)
             except AttributeError:
-                raise AttributeError("type object 'WriterTensorboardX' has no attribute '{}'".format(name))
+                raise AttributeError(f"type object 'WriterTensorboardX' has no attribute '{name}'")
             return attr

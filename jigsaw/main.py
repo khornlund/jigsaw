@@ -18,6 +18,7 @@ def get_instance(module, name, config, *args):
 
 
 def seed_everything(seed=1234):
+    print(f'Using random seed: {seed}')
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
     np.random.seed(seed)
@@ -27,6 +28,8 @@ def seed_everything(seed=1234):
 
 
 def train(config, resume):
+    seed_everything(config['random_seed'])
+
     print('getting logger')
     train_logger = Logger()
 
@@ -34,6 +37,10 @@ def train(config, resume):
     print('getting data loader')
     data_loader = get_instance(module_data, 'data_loader', config)
     valid_data_loader = data_loader.split_validation()
+
+    # add data_loader attributes to config
+    config['arch']['embedding_matrix'] = data_loader.embedding_matrix
+    config['arch']['num_aux_targets']  = data_loader.y_aux_train.shape[-1]
 
     # build model architecture
     model = get_instance(module_arch, 'arch', config)

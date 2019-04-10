@@ -19,9 +19,10 @@ class JigsawLstmModel(BaseModel):
     def __init__(self, embedding_matrix, num_aux_targets, max_features=None,
                  lstm_units=128, dense_hidden_units=4 * 128):
         super(JigsawLstmModel, self).__init__()
+        max_features = max_features if max_features else embedding_matrix.shape[0]
         embed_size = embedding_matrix.shape[1]
-        max_features = max_features if max_features else embed_size
 
+        print(f'Loaded embedding matrix of size: {embedding_matrix.shape}')
         print(f'Using embed_size={embed_size}, max_features={max_features}, '
               f'dense_hidden_units={dense_hidden_units}')
 

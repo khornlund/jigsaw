@@ -6,21 +6,6 @@ from jigsaw.data_loader.data_sources import DataSources
 from jigsaw.data_loader.data_processor import PreProcessor
 
 
-class MnistDataLoader(BaseDataLoader):
-    """
-    MNIST data loading demo using BaseDataLoader
-    """
-    def __init__(self, data_dir, batch_size, shuffle, validation_split, num_workers, training=True):
-        trsfm = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.1307,), (0.3081,))
-        ])
-        self.data_dir = data_dir
-        self.dataset = datasets.MNIST(self.data_dir, train=training, download=True, transform=trsfm)
-        super(MnistDataLoader, self).__init__(
-            self.dataset, batch_size, shuffle, validation_split, num_workers)
-
-
 class JigsawDataLoader(BaseDataLoader):
     """"""
 
@@ -39,6 +24,8 @@ class JigsawDataLoader(BaseDataLoader):
         self.y_aux_train,
         self.embedding_matrix) = PreProcessor(self._data_dir, self._max_len).get()
 
+        self.output_dim = y_train_torch.shape[-1]
+
         self.dataset = (data.TensorDataset(x_train_torch, y_train_torch)
                         if training else
                         data.TensorDataset(x_test_torch))
@@ -50,10 +37,6 @@ class JigsawDataLoader(BaseDataLoader):
             validation_split,
             num_workers)
 
-        # super(JigsawDataLoader, self).__init__(
-        #     self.dataset,
-        #     batch_size,
-        #     (shuffle and training))
 
 
 

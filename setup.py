@@ -23,7 +23,8 @@ requirements = [
     'tensorboardX',
     'kaggle',
     'pyyaml',
-    'pandas'
+    'pandas',
+    'keras'
 ]
 
 setup(

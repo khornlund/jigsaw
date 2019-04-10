@@ -1,9 +1,13 @@
 name: Jigsaw-Simple-LSTM
 n_gpu: 1
+random_seed: 1234
 
 arch:
   args: {}
   type: JigsawLstmModel
+  # max_features: 
+  lstm_units: 128
+  dense_hidden_units: 512
 
 data_loader:
   args:
@@ -24,10 +28,9 @@ optimizer:
 loss: nll_loss
 
 lr_scheduler:
+  type: ExponentialLR
   args:
-    gamma: 0.1
-    step_size: 50
-  type: StepLR
+    gamma: 0.6
 
 metrics:
 - my_metric
@@ -35,7 +38,7 @@ metrics:
 
 trainer:
   early_stop: 10
-  epochs: 100
+  epochs: 4
   log_dir: saved/runs
   monitor: min val_loss
   save_dir: saved/
