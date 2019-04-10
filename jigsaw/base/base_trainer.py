@@ -97,8 +97,8 @@ class BaseTrainer:
                                 "training will be performed on CPU.")
             n_gpu_use = 0
         if n_gpu_use > n_gpu:
-            self.logger.warning("Warning: The number of GPU\'s configured to use is {}, but only {} are available "
-                                "on this machine.".format(n_gpu_use, n_gpu))
+            self.logger.warning(f"Warning: The number of GPU\'s configured to use is {n_gpu_use}, "
+                                f"but only {n_gpu} are available on this machine.")
             n_gpu_use = n_gpu
         device = torch.device('cuda:0' if n_gpu_use > 0 else 'cpu')
         list_ids = list(range(n_gpu_use))
@@ -117,7 +117,8 @@ class BaseTrainer:
                 if key == 'metrics':
                     log.update({mtr.__name__: value[i] for i, mtr in enumerate(self.metrics)})
                 elif key == 'val_metrics':
-                    log.update({'val_' + mtr.__name__: value[i] for i, mtr in enumerate(self.metrics)})
+                    log.update({'val_' + mtr.__name__: value[i]
+                        for i, mtr in enumerate(self.metrics)})
                 else:
                     log[key] = value
 
@@ -128,16 +129,18 @@ class BaseTrainer:
                     for key, value in log.items():
                         self.logger.info('    {:15s}: {}'.format(str(key), value))
 
-            # evaluate model performance according to configured metric, save best checkpoint as model_best
+            # evaluate model performance according to configured metric, save best
+            # checkpoint as model_best
             best = False
             if self.mnt_mode != 'off':
                 try:
-                    # check whether model performance improved or not, according to specified metric(mnt_metric)
-                    improved = (self.mnt_mode == 'min' and log[self.mnt_metric] < self.mnt_best) or \
-                               (self.mnt_mode == 'max' and log[self.mnt_metric] > self.mnt_best)
+                    # check whether model performance improved or not, according to
+                    # specified metric(mnt_metric)
+                    improved = ((self.mnt_mode == 'min' and log[self.mnt_metric] < self.mnt_best) or
+                                (self.mnt_mode == 'max' and log[self.mnt_metric] > self.mnt_best))
                 except KeyError:
-                    self.logger.warning("Warning: Metric '{}' is not found. "
-                                        "Model performance monitoring is disabled.".format(self.mnt_metric))
+                    self.logger.warning(f"Warning: Metric '{self.mnt_metric}' is not found. "
+                                        "Model performance monitoring is disabled.")
                     self.mnt_mode = 'off'
                     improved = False
                     not_improved_count = 0
