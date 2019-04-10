@@ -43,7 +43,8 @@ def train(config, resume):
     loss = getattr(module_loss, config['loss'])
     metrics = [getattr(module_metric, met) for met in config['metrics']]
 
-    # build optimizer, learning rate scheduler. delete every lines containing lr_scheduler for disabling scheduler
+    # build optimizer, learning rate scheduler. delete every lines containing
+    # lr_scheduler for disabling scheduler
     trainable_params = filter(lambda p: p.requires_grad, model.parameters())
     optimizer = get_instance(torch.optim, 'optimizer', config, trainable_params)
     lr_scheduler = get_instance(torch.optim.lr_scheduler, 'lr_scheduler', config, optimizer)
@@ -110,5 +111,6 @@ def test(config, resume):
 
     n_samples = len(data_loader.sampler)
     log = {'loss': total_loss / n_samples}
-    log.update({met.__name__: total_metrics[i].item() / n_samples for i, met in enumerate(metric_fns)})
+    log.update({met.__name__: total_metrics[i].item() /
+               n_samples for i, met in enumerate(metric_fns)})
     print(log)
