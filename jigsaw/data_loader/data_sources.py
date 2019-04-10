@@ -3,10 +3,22 @@ import os
 import zipfile
 import glob
 import shutil
+import multiprocessing
 
 import kaggle
 
 from jigsaw.data_loader.const import TRAIN_CSV, TEST_CSV, FAST_VEC, GLOVE_TXT
+
+
+class DataSources:
+
+    def __init__(self, path):
+        datasets = [JigsawDataset(path), GloveDataset(path), FastTextDataset(path)]
+        pool = multiprocessing.Pool(processes=len(datasets))
+        self.results = pool.map(self.get_data, datasets)
+
+    def get_data(self, dataset):
+        return dataset.load()
 
 
 # -- Abstract base classes ----------------------------------------------------
@@ -28,10 +40,10 @@ class KaggleDataset(abc.ABC):
             except Exception as ex:
                 raise Exception(f'Caught exception "{ex}". Ensure you have kaggle API '
                                 f'set up properly: "https://github.com/Kaggle/kaggle-api"')
-        missing_files = self.missing_files()
-        if missing_files:
-            raise Exception(f'Could not populate {missing_files}!')
-        print(f'Downloaded: {self.expected_f}')
+            missing_files = self.missing_files()
+            if missing_files:
+                raise Exception(f'Could not populate {missing_files}!')
+            print(f'Downloaded: {self.expected_f}')
         return self.read_data()
 
     @abc.abstractmethod

@@ -5,9 +5,31 @@ from torch.utils.data.sampler import SubsetRandomSampler
 
 
 class BaseDataLoader(DataLoader):
-    """Base class for all data loaders"""
-    
-    def __init__(self, dataset, batch_size, shuffle, validation_split, num_workers, collate_fn=default_collate):
+    """Base class for all data loaders.
+
+    Parameters:
+    -----------
+    dataset : ndarray
+        The data.
+
+    batch_size : int
+        Batch size.
+
+    shuffle : TBD
+        TBD
+
+    validation_split : TBD
+        TBD
+
+    num_workers : TBD
+        TBD
+
+    collate_fn : TBD
+        TBD
+    """
+
+    def __init__(self, dataset, batch_size, shuffle, validation_split, num_workers,
+                 collate_fn=default_collate):
         self.validation_split = validation_split
         self.shuffle = shuffle
 

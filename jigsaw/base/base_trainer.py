@@ -13,6 +13,29 @@ from jigsaw.utils.visualization import WriterTensorboardX
 class BaseTrainer:
     """
     Base class for all trainers
+
+    Parameters
+    ----------
+    model : TBD
+        TBD
+
+    loss : TBD
+        TBD
+
+    metrics : TBD
+        TBD
+
+    optimizer : TBD
+        TBD
+
+    resume : TBD
+        TBD
+
+    config : TBD
+        TBD
+
+    train_logger : TBD, optional, default None
+        TBD
     """
     def __init__(self, model, loss, metrics, optimizer, resume, config, train_logger=None):
         self.config = config
@@ -181,14 +204,15 @@ class BaseTrainer:
 
         # load architecture params from checkpoint.
         if checkpoint['config']['arch'] != self.config['arch']:
-            self.logger.warning("Warning: Architecture configuration given in config file is different from that of "
-                                "checkpoint. This may yield an exception while state_dict is being loaded.")
+            self.logger.warning("Warning: Architecture configuration given in config file "
+                                "is different from that of checkpoint. This may yield an "
+                                "exception while state_dict is being loaded.")
         self.model.load_state_dict(checkpoint['state_dict'])
 
         # load optimizer state from checkpoint only when optimizer type is not changed.
         if checkpoint['config']['optimizer']['type'] != self.config['optimizer']['type']:
-            self.logger.warning("Warning: Optimizer type given in config file is different from that of checkpoint. "
-                                "Optimizer parameters not being resumed.")
+            self.logger.warning("Warning: Optimizer type given in config file is different "
+                                "from that of checkpoint. Optimizer parameters not being resumed.")
         else:
             self.optimizer.load_state_dict(checkpoint['optimizer'])
 

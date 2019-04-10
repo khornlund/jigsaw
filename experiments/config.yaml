@@ -1,18 +1,18 @@
-name: Mnist_LeNet
+name: Jigsaw-Simple-LSTM
 n_gpu: 1
 
 arch:
   args: {}
-  type: MnistModel
+  type: JigsawLstmModel
 
 data_loader:
   args:
-    batch_size: 128
+    batch_size: 512
     data_dir: data/
     num_workers: 2
     shuffle: true
     validation_split: 0.1
-  type: MnistDataLoader
+  type: JigsawDataLoader
 
 optimizer:
   args:
