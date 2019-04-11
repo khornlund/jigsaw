@@ -3,29 +3,29 @@ n_gpu: 1
 random_seed: 1234
 
 arch:
-  args: {}
   type: JigsawLstmModel
-  # max_features: 
-  lstm_units: 128
-  dense_hidden_units: 512
+  args:
+    # max_features:
+    lstm_units: 128
+    dense_hidden_units: 512
 
 data_loader:
+  type: JigsawDataLoader
   args:
     batch_size: 512
     data_dir: data/
     num_workers: 0
     shuffle: true
     validation_split: 0.0
-  type: JigsawDataLoader
 
 optimizer:
+  type: Adam
   args:
     amsgrad: true
     lr: 0.001
     weight_decay: 0
-  type: Adam
 
-loss: nll_loss
+loss: binary_cross_entropy_with_logits
 
 lr_scheduler:
   type: ExponentialLR

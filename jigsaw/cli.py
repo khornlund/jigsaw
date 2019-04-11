@@ -1,8 +1,11 @@
-import click
 import os
+
 import yaml
+import click
+import torch
 
 from jigsaw import main
+
 
 @click.group()
 def cli():
@@ -26,7 +29,8 @@ def train(config_filename, resume, device):
 
     elif resume:
         # load config from checkpoint if new config file is not given.
-        # Use '--config' and '--resume' together to fine-tune trained model with changed configurations.
+        # Use '--config' and '--resume' together to fine-tune trained model with
+        # changed configurations.
         config = torch.load(resume)['config']
 
     else:

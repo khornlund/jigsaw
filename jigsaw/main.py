@@ -1,4 +1,5 @@
 import os
+import copy
 import random
 
 from tqdm import tqdm
@@ -38,12 +39,14 @@ def train(config, resume):
     data_loader = get_instance(module_data, 'data_loader', config)
     valid_data_loader = data_loader.split_validation()
 
-    # add data_loader attributes to config
-    config['arch']['embedding_matrix'] = data_loader.embedding_matrix
-    config['arch']['num_aux_targets']  = data_loader.y_aux_train.shape[-1]
+    # create new config to provide extra args to model without modifying
+    # the original config
+    arch_config = copy.deepcopy(config)
+    arch_config['arch']['args']['embedding_matrix'] = data_loader.embedding_matrix
+    arch_config['arch']['args']['num_aux_targets']  = data_loader.y_aux_train.shape[-1]
 
     # build model architecture
-    model = get_instance(module_arch, 'arch', config)
+    model = get_instance(module_arch, 'arch', arch_config)
     print(model)
 
     # get function handles of loss and metrics
