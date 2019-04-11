@@ -78,12 +78,18 @@ def test(config, resume):
         shuffle=False,
         validation_split=0.0,
         training=False,
-        num_workers=2
+        num_workers=0
     )
 
+    # create new config to provide extra args to model without modifying
+    # the original config
+    arch_config = copy.deepcopy(config)
+    arch_config['arch']['args']['embedding_matrix'] = data_loader.embedding_matrix
+    arch_config['arch']['args']['num_aux_targets']  = data_loader.y_aux_train.shape[-1]
+
     # build model architecture
-    model = get_instance(module_arch, 'arch', config)
-    model.summary()
+    model = get_instance(module_arch, 'arch', arch_config)
+    print(model)
 
     # get function handles of loss and metrics
     loss_fn = getattr(module_loss, config['loss'])

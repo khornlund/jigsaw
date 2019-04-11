@@ -5,11 +5,13 @@ import click
 import torch
 
 from jigsaw import main
+from jigsaw.utils.logger import setup_logging
 
 
 @click.group()
 def cli():
     """CLI for jigsaw"""
+    setup_logging()
 
 
 @cli.command()
