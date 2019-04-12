@@ -5,6 +5,7 @@ random_seed: 1234
 arch:
   type: JigsawLstmModel
   args:
+    data_dir: data/
     # max_features:
     lstm_units: 128
     dense_hidden_units: 512

@@ -18,7 +18,7 @@ class PreProcessor:
     y_aux_train_pp = 'y_aux_train.npy'
     emb_mx_pp      = 'embedding_matrix.npy'
 
-    def __init__(self, data_dir, max_len):
+    def __init__(self, data_dir, max_len=220):
         self._data_dir = data_dir
         self._max_len = max_len
 

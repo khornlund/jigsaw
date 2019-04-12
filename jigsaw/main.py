@@ -39,14 +39,8 @@ def train(config, resume):
     data_loader = get_instance(module_data, 'data_loader', config)
     valid_data_loader = data_loader.split_validation()
 
-    # create new config to provide extra args to model without modifying
-    # the original config
-    arch_config = copy.deepcopy(config)
-    arch_config['arch']['args']['embedding_matrix'] = data_loader.embedding_matrix
-    arch_config['arch']['args']['num_aux_targets']  = data_loader.y_aux_train.shape[-1]
-
     # build model architecture
-    model = get_instance(module_arch, 'arch', arch_config)
+    model = get_instance(module_arch, 'arch', config)
     print(model)
 
     # get function handles of loss and metrics
@@ -81,14 +75,8 @@ def test(config, resume):
         num_workers=0
     )
 
-    # create new config to provide extra args to model without modifying
-    # the original config
-    arch_config = copy.deepcopy(config)
-    arch_config['arch']['args']['embedding_matrix'] = data_loader.embedding_matrix
-    arch_config['arch']['args']['num_aux_targets']  = data_loader.y_aux_train.shape[-1]
-
     # build model architecture
-    model = get_instance(module_arch, 'arch', arch_config)
+    model = get_instance(module_arch, 'arch', config)
     print(model)
 
     # get function handles of loss and metrics
@@ -130,3 +118,46 @@ def test(config, resume):
     log.update({met.__name__: total_metrics[i].item() /
                n_samples for i, met in enumerate(metric_fns)})
     print(log)
+
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+
+def predict(config, resume):
+    # setup data_loader instances
+    data_loader = getattr(module_data, config['data_loader']['type'])(
+        config['data_loader']['args']['data_dir'],
+        batch_size=512,
+        shuffle=False,
+        validation_split=0.0,
+        training=False,
+        num_workers=0
+    )
+
+    # build model architecture
+    model = get_instance(module_arch, 'arch', config)
+    print(model)
+
+    # load state dict
+    checkpoint = torch.load(resume)
+    state_dict = checkpoint['state_dict']
+    if config['n_gpu'] > 1:
+        model = torch.nn.DataParallel(model)
+    model.load_state_dict(state_dict)
+
+    # prepare model for testing
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = model.to(device)
+    model.eval()
+
+    preds = np.zeros((len(data_loader.dataset),data_loader.output_dim))
+
+    with torch.no_grad():
+        for i, data in enumerate(tqdm(data_loader)):
+            output = model(*data).detach().cpu().numpy()
+            batch_size = output.shape[0]
+            preds[i * batch_size:(i+1) * batch_size, :] = output
+
+    pred_f = os.path.join(config['trainer']['save_dir'], config['name'], 'preds.csv')
+    np.savetxt(pred_f, preds, delimiter=',')

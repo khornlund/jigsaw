@@ -57,3 +57,17 @@ def test(resume, device):
         os.environ["CUDA_VISIBLE_DEVICES"] = device
 
     main.test(config, resume)
+
+
+@cli.command()
+@click.option('-r', '--resume', default=None, type=str,
+              help='path to latest checkpoint (default: None)')
+@click.option('-d', '--device', default=None, type=str,
+              help='indices of GPUs to enable (default: all)')
+def predict(resume, device):
+    if resume:
+        config = torch.load(resume)['config']
+    if device:
+        os.environ["CUDA_VISIBLE_DEVICES"] = device
+
+    main.predict(config, resume)

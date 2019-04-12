@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from jigsaw.base.base_model import BaseModel
+from jigsaw.data_loader.data_processor import PreProcessor
 
 
 class SpatialDropout(nn.Dropout2d):
@@ -16,9 +17,16 @@ class SpatialDropout(nn.Dropout2d):
 
 
 class JigsawLstmModel(BaseModel):
-    def __init__(self, embedding_matrix, num_aux_targets, max_features=None,
-                 lstm_units=128, dense_hidden_units=4 * 128):
+    def __init__(self, data_dir, max_features=None, lstm_units=128, dense_hidden_units=4 * 128):
         super(JigsawLstmModel, self).__init__()
+
+        # get preprocessed data
+        (_, _, _,
+        y_aux_train,
+        embedding_matrix) = PreProcessor(data_dir).get()
+
+        num_aux_targets = y_aux_train.shape[-1]
+
         max_features = max_features if max_features else embedding_matrix.shape[0]
         embed_size = embedding_matrix.shape[1]
 
